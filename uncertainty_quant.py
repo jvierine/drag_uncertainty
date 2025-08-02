@@ -124,6 +124,9 @@ def collision_probability(r0=10, r1=1, pstd0=200, pstd1=200, miss_distance=10):
 
 
 def drag_uncertainty_pc_sweep(miss_distance=200, rad0=10, rad1=10, initial_uncertainty=200.0):
+    # TBD: allow specification of the TLEs of the two satellites
+    # now we just use the default one in get_satellite()
+    
     # JD epoch
     epoch=2458826.86525
 
@@ -134,21 +137,33 @@ def drag_uncertainty_pc_sweep(miss_distance=200, rad0=10, rad1=10, initial_uncer
     # evaluate these uncertainties in atmospheric drag
     uncertainties=[10,50,100]#,20,30,40,50,60,70,80,90,100]
     for u in uncertainties:
+        # satellite one
         satellite=get_satellite(jdepoch=epoch,bstar=3.8792e-05)
-        satellite2=get_satellite(jdepoch=epoch,bstar=3.8792e-05*(u/100 + 1.0))
+        # satellite one that has a perturbed bstar
+        satellitep=get_satellite(jdepoch=epoch,bstar=3.8792e-05*(u/100 + 1.0))
 
+        # satellite two
+        satellite1=get_satellite(jdepoch=epoch,bstar=3.8792e-05)
+        # satellite otwo that has a perturbed bstar
+        satellite1p=get_satellite(jdepoch=epoch,bstar=3.8792e-05*(u/100 + 1.0))
+        
         pos_diff=[]
         pcs=[]
 
         for i in range(len(jdtimes)):
             print(i)
+            # how does the position uncertainty of the first object increase   
             e, r, v = satellite.sgp4(jdtimes[i], 0)
-            e, r2, v = satellite2.sgp4(jdtimes[i], 0)
-            pos_err=n.sqrt( (n.linalg.norm(n.array(r)-n.array(r2))*1e3)**2.0 + initial_uncertainty**2.0)
-            pos_diff.append(pos_err)#n.linalg.norm(n.array(r)-n.array(r2))*1e3)
-            print(pos_err)
+            e, r2, v = satellitep.sgp4(jdtimes[i], 0)
+            pos_err0=n.sqrt( (n.linalg.norm(n.array(r)-n.array(r2))*1e3)**2.0 + initial_uncertainty**2.0)
+
+            # how does the position uncertainty of the other object increase
+            e, r1, v1 = satellite1.sgp4(jdtimes[i], 0)
+            e, r12, v1 = satellite1p.sgp4(jdtimes[i], 0)
+            pos_err1=n.sqrt( (n.linalg.norm(n.array(r1)-n.array(r12))*1e3)**2.0 + initial_uncertainty**2.0)
+
             # TBD. we should evaluate the position errros of both objects!
-            pcs.append(collision_probability(pstd0=pos_err,pstd1=pos_err,miss_distance=miss_distance,r0=rad0,r1=rad1))
+            pcs.append(collision_probability(pstd0=pos_err0,pstd1=pos_err1,miss_distance=miss_distance,r0=rad0,r1=rad1))
         pcs=n.array(pcs)
         plt.semilogy( (jdtimes-epoch)*24, pcs*1e6,label="Drag uncertainty=%1.0f %%"%(u))
     plt.xlabel("Time since epoch (hours)")
