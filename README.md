@@ -1,6 +1,6 @@
 # The effect of atmospheric drag uncertainty on orbital elements
 
-The script uses the SGP4 propagator to investigate how errors in $B^* = \rho_0 A \frac{C_d}/{2m}$ affect position uncertainty. It doesn't matter if the uncertainty in the area-to-mass ratio ($A/m$) of the spacecraft, the drag coefficient ($C_d$), or the atmospheric density ($\rho_0$). They all have the same effect on orbit propagation.
+The script uses the SGP4 propagator to investigate how errors in $B^* = \rho_0 A \frac{C_d}{2m}$ affect position uncertainty. It doesn't matter if the uncertainty in the area-to-mass ratio ($A/m$) of the spacecraft, the drag coefficient ($C_d$), or the atmospheric density ($\rho_0$). They all have the same effect on orbit propagation.
 
 The following figure shows how the position error accumulates as a functino of time when there is an error in the $B^*$ term:
 
