@@ -12,13 +12,9 @@ from scipy.integrate import nquad
 
 def collision_probability_3d(miss_vector, sigma_vector, R):
     """
-    Compute the 3D probability of collision assuming Gaussian uncertainty.
-
-    Parameters:
-    - miss_vector: [x, y, z] miss distance vector (meters)
-    - sigma_vector: [σx, σy, σz] combined std deviations in x, y, z (meters)
-    - R: collision radius (meters)
-    
+    probability of collision. assumes that at closes approach the two satellites are predicted to be 
+    within miss_vector. The uncertainty in the position (combined for both objects) is given by the standard deviation vector
+    R is the sum of the radii of the two satellites. If the realized miss distance is less than R, a collision occurs. 
     Returns:
     - Pc: probability of collision (unitless, 0 to 1)
     """
